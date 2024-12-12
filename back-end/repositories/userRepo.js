@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../Database/database");
+const bcrypt = require("bcrypt");
 
 const User = sequelize.define(
   "users",
@@ -51,7 +52,12 @@ exports.getUserById = async (id) => {
 
 exports.addUser = async (userData) => {
   try {
-    const newUser = await User.create(userData);
+    const hashedPaswword = await bcrypt.hash(userData.password, 10);
+
+    const newUser = await User.create({
+      ...userData,
+      password: hashedPaswword,
+    });
     return newUser;
   } catch (error) {
     console.error("Error adding user: ", error);
