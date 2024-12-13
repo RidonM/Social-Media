@@ -9,7 +9,7 @@ export function useAddUser() {
   } = useMutation({
     mutationFn: addUser,
     onSuccess: () => {
-      console.log("Succes");
+      alert("User is registered successfully");
     },
     onError: (err) => {
       console.error(err);

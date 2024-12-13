@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Op } = require("sequelize");
 const sequelize = require("../Database/database");
 const bcrypt = require("bcrypt");
 
@@ -37,6 +37,7 @@ exports.getAllUsers = async () => {
     return users;
   } catch (err) {
     console.error("Error fetching users: ", err);
+    return { error: "Internal server error" };
   }
 };
 
@@ -47,6 +48,7 @@ exports.getUserById = async (id) => {
     return user;
   } catch (err) {
     console.error("Error finding User: ", err);
+    return { error: "Internal server error" };
   }
 };
 
@@ -61,5 +63,27 @@ exports.addUser = async (userData) => {
     return newUser;
   } catch (error) {
     console.error("Error adding user: ", error);
+    return { error: "Internal server error" };
+  }
+};
+
+exports.loginUser = async (loginData) => {
+  try {
+    const user = await User.findOne({ where: { email: loginData.email } });
+
+    if (!user) {
+      return null;
+    }
+
+    const isMatch = await bcrypt.compare(loginData.password, user.password);
+
+    if (!isMatch) {
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error during login: ", error);
+    return { error: "Internal server error" };
   }
 };

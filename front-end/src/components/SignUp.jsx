@@ -1,45 +1,5 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAddUser } from "../queryHooks/useAddUser";
-
-function Authentication() {
-  const [activeForm, setActiveForm] = useState("login");
-
-  return (
-    <div className="auth-container">
-      <div className="auth-buttons">
-        <button
-          className={activeForm === "login" ? "active" : ""}
-          onClick={() => setActiveForm("login")}
-        >
-          Login
-        </button>
-        <button
-          className={activeForm === "signup" ? "active" : ""}
-          onClick={() => setActiveForm("signup")}
-        >
-          Sign Up
-        </button>
-      </div>
-
-      {activeForm === "login" && <LoginForm />}
-      {activeForm === "signup" && <SignUpForm />}
-    </div>
-  );
-}
-
-function LoginForm() {
-  return (
-    <div className="auth-form">
-      <h2>Login</h2>
-      <form>
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
-}
 
 function SignUpForm() {
   const {
@@ -123,4 +83,4 @@ function SignUpForm() {
   );
 }
 
-export default Authentication;
+export default SignUpForm;

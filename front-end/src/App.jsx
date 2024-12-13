@@ -1,12 +1,20 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./app.css";
-import Authentication from "./components/Authentication";
-import Header from "./components/Header";
+import LoginPage from "./pages/LogInPage";
+import PageLayout from "./pages/PageLayout";
+import SignUpPage from "./pages/SignUpPage";
 
 function App() {
   return (
     <>
-      <Header />
-      <Authentication />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<PageLayout />}>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

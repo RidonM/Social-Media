@@ -36,9 +36,8 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const userData = req.body;
-  const newUser = await userRepository.addUser(userData);
   try {
+    const newUser = await userRepository.addUser(req.body);
     res.status(201).json({
       success: true,
       data: newUser,
@@ -47,6 +46,27 @@ router.post("/", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error adding User",
+    });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const result = await userRepository.loginUser(req.body);
+    if (!result) {
+      return res.status(401).json({
+        success: false,
+        error: "Invalid Credentials",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error loggin in",
     });
   }
 });
