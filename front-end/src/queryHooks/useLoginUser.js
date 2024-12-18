@@ -1,7 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../services/users";
+import { useNavigate } from "react-router-dom";
 
 export function useLoginUser() {
+  const navigate = useNavigate();
+
   const {
     isLoading,
     mutate: addLogin,
@@ -9,7 +12,7 @@ export function useLoginUser() {
   } = useMutation({
     mutationFn: login,
     onSuccess: () => {
-      alert("User is loged in");
+      navigate("/home");
     },
     onError: (err) => {
       console.error(err);

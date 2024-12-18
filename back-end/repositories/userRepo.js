@@ -1,35 +1,8 @@
-const { DataTypes, Op } = require("sequelize");
-const sequelize = require("../Database/database");
 const bcrypt = require("bcrypt");
-
-const User = sequelize.define(
-  "users",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-    },
-    surname: {
-      type: DataTypes.STRING,
-    },
-    username: {
-      type: DataTypes.STRING,
-    },
-    email: {
-      type: DataTypes.STRING,
-    },
-    password: {
-      type: DataTypes.STRING,
-    },
-  },
-  {
-    timestamps: false,
-  }
-);
+const { User } = require("../Database/database");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
 
 exports.getAllUsers = async () => {
   try {
@@ -81,7 +54,13 @@ exports.loginUser = async (loginData) => {
       return null;
     }
 
-    return user;
+    const { password, ...userInfo } = user.dataValues;
+
+    const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return { user, token };
   } catch (error) {
     console.error("Error during login: ", error);
     return { error: "Internal server error" };
