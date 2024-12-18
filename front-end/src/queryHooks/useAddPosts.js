@@ -1,8 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addPosts } from "../services/posts";
 import toast from "react-hot-toast";
 
 export function useAddPosts() {
+  const queryClient = useQueryClient();
+
   const {
     isLoading,
     mutate: addPost,
@@ -11,6 +13,7 @@ export function useAddPosts() {
     mutationFn: addPosts,
     onSuccess: () => {
       toast.success("Post added succesfully");
+      queryClient.invalidateQueries("posts");
     },
     onError: (err) => {
       console.log("Cannot add a post: ", err);

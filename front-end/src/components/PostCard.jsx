@@ -1,12 +1,29 @@
+import { jwtDecode } from "jwt-decode";
+
 const PostCard = ({ post }) => {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
+
   return (
     <div className="post-card">
       <div className="post-header">
-        <h2 className="post-title">{post.title}</h2>
+        <div className="header-content">
+          <h2 className="post-title">{post.title}</h2>
+          <span className="post-date">
+            {formatter.format(new Date(post.createdAt))}
+          </span>
+        </div>
         <p className="post-author">
           Posted by{" "}
           <span className="author-name">
-            {post.user.name} {post.user.surname}
+            {post.user_id === decoded.id
+              ? "You"
+              : `${post.user.name} ${post.user.surname}`}
           </span>
         </p>
       </div>

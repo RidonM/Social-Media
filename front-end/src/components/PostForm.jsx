@@ -16,9 +16,8 @@ function PostForm() {
   const decoded = jwtDecode(token);
 
   function onSubmit(data) {
-    addPost({ ...data, user_id: decoded.id }).then(() => {
-      reset(); // Clear the form after submission
-    });
+    addPost({ ...data, user_id: decoded.id });
+    reset();
   }
 
   return (

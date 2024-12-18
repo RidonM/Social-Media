@@ -60,3 +60,22 @@ exports.addPost = async (postData) => {
     return { error: "Internal server error" };
   }
 };
+
+exports.deletePost = async (id) => {
+  try {
+    const deletePost = await Posts.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    if (deletePost === 0) {
+      return { success: false, message: "Post not found" };
+    }
+
+    return { success: true, message: "Post deleted successfully" };
+  } catch (err) {
+    console.error("Error deleting post:", error);
+    throw new Error("Unable to delete post");
+  }
+};

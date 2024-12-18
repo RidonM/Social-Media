@@ -240,6 +240,17 @@ body {
   background-color: #194b2e;
 }
 
+.post-date {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -53,4 +53,32 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid post ID" });
+    }
+
+    const result = await postsRepository.deletePost(id);
+
+    if (!result.success) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
