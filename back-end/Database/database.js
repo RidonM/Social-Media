@@ -75,28 +75,6 @@ const Friends = sequelize.define(
   }
 );
 
-const Likes = sequelize.define(
-  "likes",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    liked_user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: User,
-        key: "id",
-      },
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
 const Posts = sequelize.define(
   "posts",
   {
@@ -127,11 +105,42 @@ const Posts = sequelize.define(
   }
 );
 
+const Likes = sequelize.define(
+  "likes",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    liked_user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    post_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Posts,
+        key: "id",
+      },
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 User.hasMany(Friends, { foreignKey: "user_id" });
 User.hasMany(Friends, { foreignKey: "friend_id" });
 
 User.hasMany(Likes, { foreignKey: "liked_user_id" });
 Posts.hasMany(Likes, { foreignKey: "post_id" });
+Likes.belongsTo(User, { foreignKey: "liked_user_id" });
 
 User.hasMany(Posts, { foreignKey: "user_id" });
 Posts.belongsTo(User, { foreignKey: "user_id" });

@@ -1,4 +1,4 @@
-const { Posts, User } = require("../Database/database");
+const { Posts, User, Likes, sequelize } = require("../Database/database");
 
 exports.getAllPosts = async () => {
   try {
@@ -8,7 +8,17 @@ exports.getAllPosts = async () => {
           model: User,
           attributes: ["name", "surname"],
         },
+        {
+          model: Likes,
+          attributes: [],
+        },
       ],
+      attributes: {
+        include: [
+          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"],
+        ],
+      },
+      group: ["Posts.id", "User.id"],
       order: [["createdAt", "DESC"]],
     });
     return posts;

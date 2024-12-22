@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { authenticateToken } = require("../middleware/jwt");
 const postsRepository = require("../repositories/postsRepo");
+const { checkPostOwner } = require("../middleware/checkPostOwner");
 
 router.use(authenticateToken);
 
@@ -53,7 +54,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", checkPostOwner, async (req, res) => {
   try {
     const id = req.params.id;
 

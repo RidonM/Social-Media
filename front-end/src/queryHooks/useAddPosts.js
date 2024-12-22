@@ -12,7 +12,7 @@ export function useAddPosts() {
   } = useMutation({
     mutationFn: addPosts,
     onSuccess: () => {
-      toast.success("Post added succesfully");
+      toast.success("Post added successfully");
       queryClient.invalidateQueries("posts");
     },
     onError: (err) => {

@@ -1,10 +1,10 @@
+import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./app.css";
+import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LogInPage";
 import PageLayout from "./pages/PageLayout";
 import SignUpPage from "./pages/SignUpPage";
-import HomePage from "./pages/HomePage";
-import Toaster from "react-hot-toast";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-      <Toaster />
+      <Toaster position="top-center" reverseOrder={false} />
     </>
   );
 }

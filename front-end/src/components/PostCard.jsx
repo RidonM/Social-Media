@@ -1,4 +1,7 @@
+import { faThumbsUp, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { jwtDecode } from "jwt-decode";
+import { useDeletePosts } from "../queryHooks/useDeletePosts";
 
 const PostCard = ({ post }) => {
   const formatter = new Intl.DateTimeFormat("en-US", {
@@ -8,6 +11,14 @@ const PostCard = ({ post }) => {
 
   const token = localStorage.getItem("token");
   const decoded = jwtDecode(token);
+
+  const userId = decoded.id;
+
+  const { deletePost, isLoading, error } = useDeletePosts();
+
+  function deleteThePost(id) {
+    deletePost(id);
+  }
 
   return (
     <div className="post-card">
@@ -30,10 +41,18 @@ const PostCard = ({ post }) => {
       <div className="post-content">
         <p>{post.content}</p>
       </div>
+      <span className="like-count">
+        {post.likeCount} {post.likeCount === 1 ? "Like" : "Likes"}
+      </span>
       <div className="post-footer">
         <button className="like-button">
-          <span className="like-count">5</span> Likes
+          <FontAwesomeIcon size="lg" icon={faThumbsUp} />
         </button>
+        {userId === post.user_id && (
+          <button className="delete-btn" onClick={() => deleteThePost(post.id)}>
+            <FontAwesomeIcon size="lg" icon={faTrash} />
+          </button>
+        )}
       </div>
     </div>
   );
