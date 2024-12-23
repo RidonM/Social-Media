@@ -2,6 +2,8 @@ import { faThumbsUp, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { jwtDecode } from "jwt-decode";
 import { useDeletePosts } from "../queryHooks/useDeletePosts";
+import { useLikePost } from "../queryHooks/useLikePost";
+import { useUnLikePost } from "../queryHooks/useUnLikePost";
 
 const PostCard = ({ post }) => {
   const formatter = new Intl.DateTimeFormat("en-US", {
@@ -15,9 +17,19 @@ const PostCard = ({ post }) => {
   const userId = decoded.id;
 
   const { deletePost, isLoading, error } = useDeletePosts();
+  const { loading, like, errors } = useLikePost();
+  const { load, unLike } = useUnLikePost();
 
   function deleteThePost(id) {
     deletePost(id);
+  }
+
+  function likePost(post) {
+    like({ liked_user_id: userId, post_id: post });
+  }
+
+  function unLikePost(postId) {
+    unLike({ userId, postId });
   }
 
   return (
@@ -45,9 +57,25 @@ const PostCard = ({ post }) => {
         {post.likeCount} {post.likeCount === 1 ? "Like" : "Likes"}
       </span>
       <div className="post-footer">
-        <button className="like-button">
-          <FontAwesomeIcon size="lg" icon={faThumbsUp} />
-        </button>
+        {post.isLiked === 1 ? (
+          <button
+            onClick={() => unLikePost(post.id)}
+            className="like-button"
+            style={{ backgroundColor: "#2e8b57" }}
+          >
+            <FontAwesomeIcon size="lg" icon={faThumbsUp} color={"#fff"} />
+          </button>
+        ) : (
+          <button
+            onClick={() => likePost(post.id)}
+            className="like-button"
+            style={{
+              backgroundColor: "#fff",
+            }}
+          >
+            <FontAwesomeIcon size="lg" icon={faThumbsUp} color={"#2e8b57"} />
+          </button>
+        )}
         {userId === post.user_id && (
           <button className="delete-btn" onClick={() => deleteThePost(post.id)}>
             <FontAwesomeIcon size="lg" icon={faTrash} />

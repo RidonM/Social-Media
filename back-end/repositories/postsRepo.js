@@ -1,6 +1,6 @@
 const { Posts, User, Likes, sequelize } = require("../Database/database");
 
-exports.getAllPosts = async () => {
+exports.getAllPosts = async (id) => {
   try {
     const posts = await Posts.findAll({
       include: [
@@ -16,11 +16,22 @@ exports.getAllPosts = async () => {
       attributes: {
         include: [
           [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"],
+          [
+            sequelize.literal(`
+                EXISTS (
+                    SELECT 1 FROM likes 
+                    WHERE likes.post_id = Posts.id 
+                    AND likes.liked_user_id = ${id}
+                )
+            `),
+            "isLiked",
+          ],
         ],
       },
       group: ["Posts.id", "User.id"],
       order: [["createdAt", "DESC"]],
     });
+
     return posts;
   } catch (err) {
     console.error("Error fetching posts: ", err);
@@ -85,7 +96,7 @@ exports.deletePost = async (id) => {
 
     return { success: true, message: "Post deleted successfully" };
   } catch (err) {
-    console.error("Error deleting post:", error);
+    console.error("Error deleting post:", err);
     throw new Error("Unable to delete post");
   }
 };

@@ -55,7 +55,7 @@ function Header() {
           <nav className="nav-links">
             <a href="#home">Home</a>
             <a href="#friends">Friends</a>
-            <a href="#messages">Messages</a>
+            {/* <a href="#messages">Messages</a> */}
           </nav>
           <div className="user-actions">
             <button className="notifications-btn">

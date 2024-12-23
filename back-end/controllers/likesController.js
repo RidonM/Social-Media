@@ -36,4 +36,27 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.delete("/", async (req, res) => {
+  try {
+    const { userId, postId } = req.query;
+
+    if (!userId || !postId) {
+      return res.status(400).send({ error: "userId and postId are required" });
+    }
+
+    const unLike = await likesRepository.unLikePost(userId, postId);
+
+    if (!unLike) {
+      return res
+        .status(404)
+        .send({ error: "Post not found or user has not liked this post" });
+    }
+
+    return res.status(200).send({ message: "Post unliked successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

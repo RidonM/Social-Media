@@ -79,3 +79,23 @@ exports.likePosts = async (likedPost) => {
     return { error: "Internal server error" };
   }
 };
+
+exports.unLikePost = async (userId, postId) => {
+  try {
+    const unLike = Likes.destroy({
+      where: {
+        liked_user_id: userId,
+        post_id: postId,
+      },
+    });
+
+    if (!unLike) {
+      return { success: false, message: "Post not liked" };
+    }
+
+    return { success: true, message: "Post unliked successfully" };
+  } catch (err) {
+    console.error("Error unliking post:", err);
+    throw new Error("Unable to unlike post");
+  }
+};

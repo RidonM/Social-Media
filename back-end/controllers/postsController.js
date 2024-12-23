@@ -25,7 +25,7 @@ router.get("/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const posts = await postsRepository.getAllPosts();
+    const posts = await postsRepository.getAllPosts(req.user.id);
     res.status(200).json({
       success: true,
       data: posts,
