@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LogInPage";
 import PageLayout from "./pages/PageLayout";
 import SignUpPage from "./pages/SignUpPage";
+import Explore from "./pages/Explore";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/explore" element={<Explore />} />
           </Route>
         </Routes>
       </BrowserRouter>

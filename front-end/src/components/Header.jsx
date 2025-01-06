@@ -1,7 +1,7 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -46,21 +46,18 @@ function Header() {
 
   return (
     <header className="social-header">
-      <div className="logo">SocialApp</div>
+      <div onClick={() => navigate("/home")} className="logo">
+        SocialApp
+      </div>
       {isLoggedIn && (
         <>
           <div className="search-bar">
             <input type="text" placeholder="Search..." />
           </div>
           <nav className="nav-links">
-            <a href="#home">Home</a>
-            <a href="#friends">Friends</a>
-            {/* <a href="#messages">Messages</a> */}
+            <Link to={"/explore"}>Explore More</Link>
           </nav>
           <div className="user-actions">
-            <button className="notifications-btn">
-              <span>🔔</span>
-            </button>
             <div className="profile-menu" ref={dropdownRef}>
               <button className="profile-btn" onClick={toggleDropdown}>
                 <FontAwesomeIcon size="lg" icon={faUser} />
