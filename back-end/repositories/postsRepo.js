@@ -19,8 +19,8 @@ exports.getAllPosts = async (id) => {
           [
             sequelize.literal(`
                 EXISTS (
-                    SELECT 1 FROM likes 
-                    WHERE likes.post_id = Posts.id 
+                    SELECT 1 FROM likes
+                    WHERE likes.post_id = Posts.id
                     AND likes.liked_user_id = ${id}
                 )
             `),
@@ -36,6 +36,56 @@ exports.getAllPosts = async (id) => {
   } catch (err) {
     console.error("Error fetching posts: ", err);
     return { error: "Internal server error" };
+  }
+};
+
+exports.getPostsFromFriends = async (userId) => {
+  try {
+    const posts = await Posts.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["name", "surname"],
+        },
+        {
+          model: Likes,
+          attributes: [],
+        },
+      ],
+      attributes: {
+        include: [
+          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"],
+          [
+            sequelize.literal(`EXISTS (
+              SELECT 1 FROM likes 
+              WHERE likes.post_id = Posts.id 
+              AND likes.liked_user_id = ${userId}
+            )`),
+            "isLiked",
+          ],
+        ],
+      },
+      where: sequelize.literal(`
+        user_id IN (
+          SELECT 
+            CASE 
+              WHEN friends.user_id = ${userId} THEN friends.friend_id
+              WHEN friends.friend_id = ${userId} THEN friends.user_id
+            END 
+          FROM friends
+          WHERE 
+            (friends.user_id = ${userId} OR friends.friend_id = ${userId})
+            AND friends.status = 'accepted'
+        )
+      `),
+      group: ["Posts.id", "User.id"],
+      order: [["createdAt", "DESC"]],
+    });
+
+    return posts;
+  } catch (err) {
+    console.error("Error fetching posts from friends: ", err);
+    throw new Error("Error fetching posts from friends");
   }
 };
 

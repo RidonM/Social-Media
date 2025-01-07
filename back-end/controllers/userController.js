@@ -1,7 +1,8 @@
 const router = require("express").Router();
+const { authenticateToken } = require("../middleware/jwt");
 const userRepository = require("../repositories/userRepo");
 
-router.get("/:id", async (req, res) => {
+router.get("/profile/:id", async (req, res) => {
   const id = req.params.id;
 
   const user = await userRepository.getUserById(+id);
@@ -69,6 +70,17 @@ router.post("/login", async (req, res) => {
       success: false,
       message: "Error logging in",
     });
+  }
+});
+
+router.get("/non-friends", authenticateToken, async (req, res) => {
+  try {
+    console.log("ridon78", req.user.id);
+    const nonFriends = await userRepository.getNonFriends(req.user.id);
+    return res.status(200).json({ success: true, data: nonFriends });
+  } catch (err) {
+    console.error("Error fetching non-friends:", err);
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 

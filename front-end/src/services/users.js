@@ -10,3 +10,8 @@ export const login = async (loginData) => {
   localStorage.setItem("token", response.data.token);
   return response.data;
 };
+
+export const getNonFriends = async () => {
+  const response = await apiClient.get("/users/non-friends");
+  return response.data;
+};

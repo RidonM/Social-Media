@@ -1,7 +1,9 @@
 const bcrypt = require("bcrypt");
-const { User } = require("../Database/database");
+const { User, Friends } = require("../Database/database");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const { Op } = require("sequelize");
+const { sequelize } = require("../Database/database");
 dotenv.config({ path: "./config.env" });
 
 exports.getAllUsers = async () => {
@@ -63,6 +65,33 @@ exports.loginUser = async (loginData) => {
     return { user, token };
   } catch (error) {
     console.error("Error during login: ", error);
+    return { error: "Internal server error" };
+  }
+};
+
+exports.getNonFriends = async (userId) => {
+  try {
+    const nonFriends = await User.findAll({
+      where: {
+        id: {
+          [Op.ne]: userId,
+          [Op.notIn]: sequelize.literal(`(
+            SELECT f.friend_id 
+            FROM friends f 
+            WHERE f.user_id = ${userId} 
+            UNION 
+            SELECT f.user_id 
+            FROM friends f 
+            WHERE f.friend_id = ${userId}
+          )`),
+        },
+      },
+      attributes: ["id", "name", "surname"],
+    });
+
+    return nonFriends;
+  } catch (error) {
+    console.error("Error fetching non-friends:", error);
     return { error: "Internal server error" };
   }
 };

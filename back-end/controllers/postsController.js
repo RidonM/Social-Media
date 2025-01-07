@@ -26,6 +26,7 @@ router.get("/:id", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const posts = await postsRepository.getAllPosts(req.user.id);
+    console.log("ridon29", req.user.id);
     res.status(200).json({
       success: true,
       data: posts,
@@ -36,6 +37,17 @@ router.get("/", async (req, res) => {
       success: false,
       message: "Error fetching posts",
     });
+  }
+});
+
+router.get("/friends", async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const posts = await postsRepository.getPostsFromFriends(userId);
+    return res.json(posts);
+  } catch (err) {
+    console.error("Error fetching friend's posts: ", err.message);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

@@ -1,28 +1,11 @@
 import FriendCard from "../components/FriendCard";
-
-const friends = [
-  {
-    id: 1,
-    name: "John Doe",
-    profession: "Software Engineer",
-    img: "https://via.placeholder.com/100",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    profession: "Graphic Designer",
-    img: "https://via.placeholder.com/100",
-  },
-  {
-    id: 3,
-    name: "Emily Brown",
-    profession: "Content Writer",
-    img: "https://via.placeholder.com/100",
-  },
-  // Add more friend data as needed
-];
+import { useNonFriends } from "../queryHooks/useNonFriends";
 
 function Explore() {
+  const { isLoading, users, error } = useNonFriends();
+
+  console.log("ridon7", users);
+
   return (
     <>
       <div className="container">
@@ -32,8 +15,8 @@ function Explore() {
         </header>
 
         <div className="friends-list">
-          {friends.map((friend) => (
-            <FriendCard key={friend.id} friend={friend} />
+          {users?.data?.map((user) => (
+            <FriendCard key={user.id} friend={user} />
           ))}
         </div>
       </div>
