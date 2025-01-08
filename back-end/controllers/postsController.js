@@ -5,7 +5,7 @@ const { checkPostOwner } = require("../middleware/checkPostOwner");
 
 router.use(authenticateToken);
 
-router.get("/:id", async (req, res) => {
+router.get("/post/:id", async (req, res) => {
   const id = req.params.id;
 
   const post = await postsRepository.getPostById(+id);
@@ -42,9 +42,11 @@ router.get("/", async (req, res) => {
 
 router.get("/friends", async (req, res) => {
   try {
-    const userId = req.user.id;
-    const posts = await postsRepository.getPostsFromFriends(userId);
-    return res.json(posts);
+    const posts = await postsRepository.getPostsFromFriends(req.user.id);
+    return res.status(200).json({
+      success: true,
+      data: posts,
+    });
   } catch (err) {
     console.error("Error fetching friend's posts: ", err.message);
     return res.status(500).json({ error: "Internal server error" });

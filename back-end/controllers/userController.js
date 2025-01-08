@@ -75,11 +75,22 @@ router.post("/login", async (req, res) => {
 
 router.get("/non-friends", authenticateToken, async (req, res) => {
   try {
-    console.log("ridon78", req.user.id);
     const nonFriends = await userRepository.getNonFriends(req.user.id);
     return res.status(200).json({ success: true, data: nonFriends });
   } catch (err) {
     console.error("Error fetching non-friends:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get("/request-friends", authenticateToken, async (req, res) => {
+  try {
+    const pendingFriends = await userRepository.getReceivedFriendRequests(
+      req.user.id
+    );
+    return res.status(200).json({ success: true, data: pendingFriends });
+  } catch (err) {
+    console.error("Error fetching received friend request:", err);
     return res.status(500).json({ success: false, error: err.message });
   }
 });

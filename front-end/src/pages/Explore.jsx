@@ -1,10 +1,9 @@
 import FriendCard from "../components/FriendCard";
+import { useAddFriends } from "../queryHooks/useAddFriends";
 import { useNonFriends } from "../queryHooks/useNonFriends";
 
 function Explore() {
   const { isLoading, users, error } = useNonFriends();
-
-  console.log("ridon7", users);
 
   return (
     <>

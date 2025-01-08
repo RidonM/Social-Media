@@ -1,9 +1,14 @@
+import FriendRequestCard from "../components/FriendRequest";
 import PostCard from "../components/PostCard";
 import PostForm from "../components/PostForm";
-import { usePosts } from "../queryHooks/usePosts";
+import { useFriendsPost } from "../queryHooks/useFriendsPost";
+import { useRequestFriends } from "../queryHooks/useRequestFriends";
 
 function HomePage() {
-  const { isLoading, posts, error } = usePosts();
+  const { isLoading, posts, error } = useFriendsPost();
+
+  const { requestedFriends } = useRequestFriends();
+  console.log("ridon11", requestedFriends);
 
   return (
     <>
@@ -14,7 +19,11 @@ function HomePage() {
             <PostCard key={item.id} post={item} />
           ))}
         </div>
-        <div></div>
+        <div>
+          {requestedFriends?.data?.map((friend) => (
+            <FriendRequestCard key={friend.id} friend={friend} />
+          ))}
+        </div>
       </div>
     </>
   );

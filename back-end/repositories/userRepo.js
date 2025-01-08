@@ -95,3 +95,25 @@ exports.getNonFriends = async (userId) => {
     return { error: "Internal server error" };
   }
 };
+
+exports.getReceivedFriendRequests = async (userId) => {
+  try {
+    const receivedFriendRequests = await User.findAll({
+      where: {
+        id: {
+          [Op.in]: sequelize.literal(`(
+            SELECT f.user_id 
+            FROM friends f 
+            WHERE f.friend_id = ${userId} AND f.status = 'pending'
+          )`),
+        },
+      },
+      attributes: ["id", "name", "surname"],
+    });
+
+    return receivedFriendRequests;
+  } catch (error) {
+    console.error("Error fetching received friend requests:", error);
+    return { error: "Internal server error" };
+  }
+};

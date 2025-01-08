@@ -1,5 +1,8 @@
+const { authenticateToken } = require("../middleware/jwt");
 const friendsRepository = require("../repositories/friendsRepo");
 const router = require("express").Router();
+
+router.use(authenticateToken);
 
 router.get("/", async (req, res) => {
   try {
@@ -19,7 +22,8 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/send", async (req, res) => {
-  const { userId, friendId } = req.body;
+  const userId = req.user.id;
+  const { friendId } = req.body;
 
   try {
     if (!userId || !friendId) {
@@ -48,13 +52,14 @@ router.post("/send", async (req, res) => {
 });
 
 router.put("/accept", async (req, res) => {
-  const { userId, friendId } = req.body;
+  const userId = req.user.id;
+  const { friendId } = req.body;
 
   try {
-    if (!userId || !friendId) {
+    if (!friendId) {
       return res.status(400).json({
         success: false,
-        message: "Both userId and friendId are required.",
+        message: "friendId is required.",
       });
     }
 
@@ -77,13 +82,14 @@ router.put("/accept", async (req, res) => {
 });
 
 router.put("/decline", async (req, res) => {
-  const { userId, friendId } = req.body;
+  const userId = req.user.id;
+  const { friendId } = req.body;
 
   try {
-    if (!userId || !friendId) {
+    if (!friendId) {
       return res.status(400).json({
         success: false,
-        message: "Both userId and friendId are required.",
+        message: "friendId is required.",
       });
     }
 

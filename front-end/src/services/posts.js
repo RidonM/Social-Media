@@ -14,3 +14,8 @@ export const deletePosts = async (id) => {
   const response = await apiClient.delete(`/posts/${id}`);
   return response.data;
 };
+
+export const getFriendsPost = async () => {
+  const response = await apiClient.get("/posts/friends");
+  return response.data;
+};

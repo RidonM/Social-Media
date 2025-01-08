@@ -15,3 +15,8 @@ export const getNonFriends = async () => {
   const response = await apiClient.get("/users/non-friends");
   return response.data;
 };
+
+export const getRequestedFriends = async () => {
+  const response = await apiClient.get("/users/request-friends");
+  return response.data;
+};

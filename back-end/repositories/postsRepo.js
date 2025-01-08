@@ -1,4 +1,11 @@
-const { Posts, User, Likes, sequelize } = require("../Database/database");
+const { Op } = require("sequelize");
+const {
+  Posts,
+  User,
+  Friends,
+  Likes,
+  sequelize,
+} = require("../Database/database");
 
 exports.getAllPosts = async (id) => {
   try {
@@ -39,9 +46,18 @@ exports.getAllPosts = async (id) => {
   }
 };
 
-exports.getPostsFromFriends = async (userId) => {
+exports.getPostsFromFriends = async (currentUserId) => {
   try {
     const posts = await Posts.findAll({
+      where: {
+        user_id: {
+          [Op.in]: sequelize.literal(`
+                      (SELECT friend_id FROM friends WHERE user_id = ${currentUserId}
+                      UNION
+                      SELECT user_id FROM friends WHERE friend_id = ${currentUserId})
+                  `),
+        },
+      },
       include: [
         {
           model: User,
@@ -49,43 +65,74 @@ exports.getPostsFromFriends = async (userId) => {
         },
         {
           model: Likes,
-          attributes: [],
+          attributes: [], // Do not return the actual Likes, just use them to count
+          required: false, // Left join to include posts even if they have no likes
         },
       ],
       attributes: {
         include: [
-          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"],
+          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"], // Count the likes
           [
-            sequelize.literal(`EXISTS (
-              SELECT 1 FROM likes 
-              WHERE likes.post_id = Posts.id 
-              AND likes.liked_user_id = ${userId}
-            )`),
-            "isLiked",
+            sequelize.literal(`
+                EXISTS (
+                    SELECT 1 FROM likes
+                    WHERE likes.post_id = Posts.id
+                    AND likes.liked_user_id = ${currentUserId}
+                )
+            `),
+            "isLiked", // Check if the current user liked the post
           ],
         ],
       },
-      where: sequelize.literal(`
-        user_id IN (
-          SELECT 
-            CASE 
-              WHEN friends.user_id = ${userId} THEN friends.friend_id
-              WHEN friends.friend_id = ${userId} THEN friends.user_id
-            END 
-          FROM friends
-          WHERE 
-            (friends.user_id = ${userId} OR friends.friend_id = ${userId})
-            AND friends.status = 'accepted'
-        )
-      `),
-      group: ["Posts.id", "User.id"],
+      group: ["Posts.id", "User.id"], // Group by post ID to use COUNT
       order: [["createdAt", "DESC"]],
     });
 
-    return posts;
-  } catch (err) {
-    console.error("Error fetching posts from friends: ", err);
-    throw new Error("Error fetching posts from friends");
+    // Include your own posts as well
+    const yourPosts = await Posts.findAll({
+      where: {
+        user_id: currentUserId, // Only your own posts
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["name", "surname"],
+        },
+        {
+          model: Likes,
+          attributes: [], // Do not return the actual Likes, just use them to count
+          required: false, // Left join to include posts even if they have no likes
+        },
+      ],
+      attributes: {
+        include: [
+          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"], // Count the likes
+          [
+            sequelize.literal(` 
+                EXISTS (
+                    SELECT 1 FROM likes 
+                    WHERE likes.post_id = Posts.id 
+                    AND likes.liked_user_id = ${currentUserId} 
+                ) 
+            `),
+            "isLiked", // Check if the current user liked the post
+          ],
+        ],
+      },
+      group: ["Posts.id", "User.id"], // Group by post ID to use COUNT
+      order: [["createdAt", "DESC"]],
+    });
+
+    // Combine your posts with your friends' posts
+    const allPosts = [...posts, ...yourPosts];
+
+    // Sort all posts in descending order based on creation date
+    allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return allPosts;
+  } catch (error) {
+    console.error("Error fetching posts from friends:", error);
+    throw error;
   }
 };
 
