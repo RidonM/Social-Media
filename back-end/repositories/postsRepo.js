@@ -52,9 +52,9 @@ exports.getPostsFromFriends = async (currentUserId) => {
       where: {
         user_id: {
           [Op.in]: sequelize.literal(`
-                      (SELECT friend_id FROM friends WHERE user_id = ${currentUserId}
+                      (SELECT friend_id FROM friends WHERE user_id = ${currentUserId} AND status = 'accepted'
                       UNION
-                      SELECT user_id FROM friends WHERE friend_id = ${currentUserId})
+                      SELECT user_id FROM friends WHERE friend_id = ${currentUserId} AND status = 'accepted')
                   `),
         },
       },
@@ -65,13 +65,13 @@ exports.getPostsFromFriends = async (currentUserId) => {
         },
         {
           model: Likes,
-          attributes: [], // Do not return the actual Likes, just use them to count
-          required: false, // Left join to include posts even if they have no likes
+          attributes: [],
+          required: false,
         },
       ],
       attributes: {
         include: [
-          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"], // Count the likes
+          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"],
           [
             sequelize.literal(`
                 EXISTS (
@@ -80,18 +80,17 @@ exports.getPostsFromFriends = async (currentUserId) => {
                     AND likes.liked_user_id = ${currentUserId}
                 )
             `),
-            "isLiked", // Check if the current user liked the post
+            "isLiked",
           ],
         ],
       },
-      group: ["Posts.id", "User.id"], // Group by post ID to use COUNT
+      group: ["Posts.id", "User.id"],
       order: [["createdAt", "DESC"]],
     });
 
-    // Include your own posts as well
     const yourPosts = await Posts.findAll({
       where: {
-        user_id: currentUserId, // Only your own posts
+        user_id: currentUserId,
       },
       include: [
         {
@@ -100,13 +99,13 @@ exports.getPostsFromFriends = async (currentUserId) => {
         },
         {
           model: Likes,
-          attributes: [], // Do not return the actual Likes, just use them to count
-          required: false, // Left join to include posts even if they have no likes
+          attributes: [],
+          required: false,
         },
       ],
       attributes: {
         include: [
-          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"], // Count the likes
+          [sequelize.fn("COUNT", sequelize.col("Likes.id")), "likeCount"],
           [
             sequelize.literal(` 
                 EXISTS (
@@ -115,18 +114,16 @@ exports.getPostsFromFriends = async (currentUserId) => {
                     AND likes.liked_user_id = ${currentUserId} 
                 ) 
             `),
-            "isLiked", // Check if the current user liked the post
+            "isLiked",
           ],
         ],
       },
-      group: ["Posts.id", "User.id"], // Group by post ID to use COUNT
+      group: ["Posts.id", "User.id"],
       order: [["createdAt", "DESC"]],
     });
 
-    // Combine your posts with your friends' posts
     const allPosts = [...posts, ...yourPosts];
 
-    // Sort all posts in descending order based on creation date
     allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return allPosts;
