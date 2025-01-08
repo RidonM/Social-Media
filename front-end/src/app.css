@@ -442,3 +442,8 @@ header p {
   padding: 8px 16px;
   cursor: pointer;
 }
+
+.nav-wrapper {
+  display: flex;
+  align-items: center;
+}

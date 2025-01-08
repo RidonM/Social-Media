@@ -51,27 +51,29 @@ function Header() {
       </div>
       {isLoggedIn && (
         <>
-          <div className="search-bar">
+          {/* <div className="search-bar">
             <input type="text" placeholder="Search..." />
-          </div>
-          <nav className="nav-links">
-            <Link to={"/explore"}>Explore More</Link>
-          </nav>
-          <div className="user-actions">
-            <div className="profile-menu" ref={dropdownRef}>
-              <button className="profile-btn" onClick={toggleDropdown}>
-                <FontAwesomeIcon size="lg" icon={faUser} />
-              </button>
+          </div> */}
+          <div className="nav-wrapper">
+            <nav className="nav-links">
+              <Link to={"/explore"}>Explore More</Link>
+            </nav>
+            <div className="user-actions">
+              <div className="profile-menu" ref={dropdownRef}>
+                <button className="profile-btn" onClick={toggleDropdown}>
+                  <FontAwesomeIcon size="lg" icon={faUser} />
+                </button>
 
-              {isDropdownOpen && (
-                <div className="dropdown-menu">
-                  <ul>
-                    <li onClick={() => alert("Viewing Profile")}>Profile</li>
-                    <li onClick={() => alert("Settings")}>Settings</li>
-                    <li onClick={logOut}>Log Out</li>
-                  </ul>
-                </div>
-              )}
+                {isDropdownOpen && (
+                  <div className="dropdown-menu">
+                    <ul>
+                      <li onClick={() => alert("Viewing Profile")}>Profile</li>
+                      <li onClick={() => alert("Settings")}>Settings</li>
+                      <li onClick={logOut}>Log Out</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </>
